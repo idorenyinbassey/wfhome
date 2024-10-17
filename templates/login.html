@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="POST" class="form">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.login_identifier.label(class="form-label") }} 
+        {{ form.login_identifier(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.password.label(class="form-label") }} 
+        {{ form.password(id="password", class="form-control") }}
+        <button type="button" onclick="togglePasswordVisibility('password')">Show/Hide</button>
+    </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+<p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a>.</p>
+
+<!-- JavaScript to toggle password visibility -->
+<script>
+    function togglePasswordVisibility(id) {
+        var passwordField = document.getElementById(id);
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+</script>
+{% endblock %}

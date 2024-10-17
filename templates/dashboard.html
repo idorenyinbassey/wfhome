@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Welcome to Your Dashboard, {{ current_user.username }}!</h2>
+
+<div class="dashboard">
+    <!-- Section to create a new task -->
+    <div class="create-task">
+        <h3>Create a New Task</h3>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.task_title.label }} {{ form.task_title() }}
+            </div>
+            <div>
+                {{ form.task_description.label }} {{ form.task_description() }}
+            </div>
+            <div>
+                {{ form.task_type.label }} {{ form.task_type() }}
+            </div>
+            <div>
+                {{ form.submit() }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Section to list existing tasks -->
+    <div class="task-list">
+        <h3>Your Tasks</h3>
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <strong>{{ task.title }}</strong> - {{ task.description }} ({{ task.type }})
+                </li>
+            {% else %}
+                <li>No tasks found. Create your first task!</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
