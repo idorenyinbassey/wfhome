@@ -10,12 +10,6 @@ from flask import redirect, url_for, request, flash
 # Initialize SQLAlchemy instance
 db = SQLAlchemy()
 
-# Enum for user status
-class UserStatus(Enum):
-    ACTIVE = 'active'
-    AWAY = 'away'
-    BUSY = 'busy'
-
 # Enum for task type
 class TaskType(Enum):
     INDIVIDUAL = 'individual'
@@ -23,7 +17,7 @@ class TaskType(Enum):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    is_admin = db.Column(db.Boolean, default = False)
+    is_admin = db.Column(db.Boolean, default=False)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(150), nullable=False)
@@ -36,10 +30,9 @@ class User(db.Model, UserMixin):
     address = db.Column(db.String(250), nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    status = db.Column(db.String(20), nullable=False, default=UserStatus.ACTIVE.value)
 
-    # New field for profile picture
-    profile_picture = db.Column(db.String(250), nullable=True)  # Path to the profile picture
+    # Profile picture field
+    profile_picture = db.Column(db.String(250), nullable=True)
 
     tasks = db.relationship('Task', foreign_keys='Task.user_id', backref='creator', lazy=True)
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assignee_id', backref='assignee', lazy=True)
@@ -68,7 +61,7 @@ class Task(db.Model):
 
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # New fields for timer
+    # Timer fields
     start_time = db.Column(db.DateTime, nullable=True)  # Task start time
     end_time = db.Column(db.DateTime, nullable=True)    # Task end time
 
@@ -77,7 +70,7 @@ class Task(db.Model):
         """Calculate the duration of the task."""
         if self.start_time and self.end_time:
             return self.end_time - self.start_time
-        return None  # Return None if duration cannot be calculated
+        return None
 
     def __repr__(self):
         return (f"Task('{self.title}', 'Assigned to user_id: {self.assignee_id if self.assignee_id else self.user_id}', "
@@ -85,28 +78,15 @@ class Task(db.Model):
                 
 # Custom ModelView for User model
 class UserModelView(ModelView):
-    # Control which columns are displayed in the list view
-    column_list = ('id', 'username', 'email', 'first_name', 'last_name', 'department', 'status', 'date_created')
-
-    # Specify which columns can be searched
+    column_list = ('id', 'username', 'email', 'first_name', 'last_name', 'department', 'date_created')
     column_searchable_list = ('username', 'email', 'first_name', 'last_name')
-
-    # Specify which columns can be filtered
-    column_filters = ('status', 'department')
-
-    # Make specific columns editable from the list view
-    column_editable_list = ('status', 'department')
-
-    # Set form fields for creating or editing users (excluding sensitive data like password_hash)
+    column_filters = ('department',)
     form_columns = ('username', 'email', 'first_name', 'middle_name', 'last_name', 'department', 
-                    'phone_number', 'address', 'status', 'profile_picture')
+                    'phone_number', 'address', 'profile_picture')
 
-    # Override is_accessible to restrict access to certain roles
     def is_accessible(self):
-        # Replace with your condition to check admin rights (e.g., a role-based system)
         return current_user.is_authenticated and getattr(current_user, 'is_admin', False)
 
-    # Redirect users who do not have access
     def inaccessible_callback(self, name, **kwargs):
         flash("You do not have permission to access this page.", "danger")
         return redirect(url_for('auth.login', next=request.url))
@@ -119,7 +99,6 @@ class TaskModelView(ModelView):
     form_columns = ('title', 'description', 'priority', 'due_date', 'task_type', 'user_id', 'assignee_id', 'start_time', 'end_time')
 
     def is_accessible(self):
-        # Replace with your condition to check admin rights (e.g., a role-based system)
         return current_user.is_authenticated and getattr(current_user, 'is_admin', False)
 
     def inaccessible_callback(self, name, **kwargs):

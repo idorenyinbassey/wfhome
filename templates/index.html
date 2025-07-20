@@ -1,43 +1,233 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}WorkFlow Pro - Transform Your Remote Work Experience{% endblock %}
 
 {% block content %}
-<div class="hero-section text-center">
-    <img src="{{ url_for('static', filename='images/hero-image.jpg') }}" alt="Work from Home" class="img-fluid mt-4" style="max-width: 100%; height: auto; border-radius: 8px;">
-</div>
-
-<div class="container text-center mt-5">
-    <h2>Welcome to the Work from Home Management System!</h2>
-    <p class="lead mt-3">Manage your remote work efficiently and stay connected. Please log in or register to start working remotely.</p>
-    
-    <div class="mt-4">
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg mx-2">Register</a>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content fade-in">
+                    <h1 class="hero-title mb-4">
+                        Transform Your <span class="text-primary">Remote Work</span> Experience
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        Streamline your work-from-home journey with powerful task management, 
+                        productivity tracking, and seamless collaboration tools.
+                    </p>
+                    <div class="hero-buttons">
+                        {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-3 mb-2">
+                                <i class="fas fa-rocket me-2"></i>Get Started Free
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg mb-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('tasks.dashboard') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image slide-in">
+                    <img src="{{ url_for('static', filename='images/hero-image.jpg') }}" 
+                         alt="Remote Work Management" 
+                         class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold text-primary mb-3">Why Choose WorkFlow Pro?</h2>
+                <p class="lead text-muted">
+                    Designed specifically for remote workers who want to maximize productivity 
+                    and maintain work-life balance.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Smart Task Management</h4>
+                    <p class="text-muted">
+                        Organize, prioritize, and track your tasks with intuitive 
+                        drag-and-drop interfaces and automated workflows.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Productivity Analytics</h4>
+                    <p class="text-muted">
+                        Get detailed insights into your work patterns, time allocation, 
+                        and productivity trends with beautiful visualizations.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Team Collaboration</h4>
+                    <p class="text-muted">
+                        Stay connected with your team through integrated communication 
+                        tools and collaborative workspaces.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.6s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Time Tracking</h4>
+                    <p class="text-muted">
+                        Monitor your time spent on different projects and activities 
+                        with automatic time logging and manual entry options.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.8s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Mobile Access</h4>
+                    <p class="text-muted">
+                        Access your work from anywhere with our responsive design 
+                        and mobile-optimized interface.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 1s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Secure & Private</h4>
+                    <p class="text-muted">
+                        Your data is protected with enterprise-grade security, 
+                        encryption, and privacy controls.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+{% if not current_user.is_authenticated %}
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stats-number">10K+</div>
+                <div class="stats-label">Active Users</div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stats-number">50K+</div>
+                <div class="stats-label">Tasks Completed</div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stats-number">99.9%</div>
+                <div class="stats-label">Uptime</div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stats-number">24/7</div>
+                <div class="stats-label">Support</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+{% if not current_user.is_authenticated %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-6 fw-bold mb-4">Ready to Transform Your Remote Work?</h2>
+                <p class="lead mb-4 text-muted">
+                    Join thousands of professionals who have already elevated their 
+                    work-from-home experience with WorkFlow Pro.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Start Free Trial
+                    </a>
+                    <a href="#features" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-play me-2"></i>Watch Demo
+                    </a>
+                </div>
+                <p class="small text-muted mt-3">
+                    <i class="fas fa-check me-1 text-success"></i>No credit card required
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-check me-1 text-success"></i>Cancel anytime
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-check me-1 text-success"></i>Free forever plan available
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Additional Styles -->
 <style>
-    body {
-        background: linear-gradient(135deg, #e0f7fa, #ffffff);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    .hero-content h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
     }
-
-    .hero-section img {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        opacity: 0.9;
     }
-
-    .container {
-        max-width: 600px;
-        margin-top: 50px;
+    
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
     }
-
-    h2 {
-        color: #00796b;
+    
+    .hero-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 1rem;
     }
-
-    .lead {
-        color: #004d40;
+    
+    .min-vh-100 {
+        min-height: 100vh;
     }
 </style>
 {% endblock %}

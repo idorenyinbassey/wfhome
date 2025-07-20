@@ -1,43 +1,126 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login - WorkFlow Pro{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-custom fade-in">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <h2 class="text-primary mb-2">Welcome Back</h2>
+                        <p class="text-muted">Sign in to your WorkFlow Pro account</p>
+                    </div>
 
-<!-- Flash messages for login -->
-{% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        <div class="alert alert-dismissible fade show" role="alert">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.login_identifier.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                {{ form.login_identifier(class="form-control", placeholder="Enter username or email") }}
+                            </div>
+                            {% if form.login_identifier.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.login_identifier.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                {{ form.password(class="form-control", placeholder="Enter your password", id="password") }}
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password')">
+                                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                </button>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label text-muted" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="text-muted mb-0">
+                            Don't have an account? 
+                            <a href="{{ url_for('auth.register') }}" class="text-decoration-none fw-medium">
+                                Create one here
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info Card -->
+            <div class="card mt-4 border-0 bg-light">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Your data is protected with enterprise-grade security
+                    </small>
+                </div>
+            </div>
         </div>
-    {% endif %}
-{% endwith %}
+    </div>
+</div>
 
-<form method="POST" class="form">
-    {{ form.hidden_tag() }}  <!-- CSRF token -->
-    <div class="form-group">
-        {{ form.login_identifier.label(class="form-label") }} 
-        {{ form.login_identifier(class="form-control") }}
-    </div>
-    <div class="form-group">
-        {{ form.password.label(class="form-label") }} 
-        {{ form.password(id="password", class="form-control") }}
-        <button type="button" onclick="togglePasswordVisibility('password')">Show/Hide</button>
-    </div>
-    <div class="form-group">
-        {{ form.submit(class="btn btn-primary") }}
-    </div>
-</form>
-<p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a>.</p>
-
-<!-- JavaScript to toggle password visibility -->
+<!-- Enhanced JavaScript -->
 <script>
     function togglePasswordVisibility(id) {
-        var passwordField = document.getElementById(id);
-        passwordField.type = passwordField.type === "password" ? "text" : "password";
+        const passwordField = document.getElementById(id);
+        const toggleIcon = document.getElementById('passwordToggleIcon');
+        
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.className = "fas fa-eye-slash";
+        } else {
+            passwordField.type = "password";
+            toggleIcon.className = "fas fa-eye";
+        }
     }
+
+    // Add loading state to form submission
+    document.querySelector('form').addEventListener('submit', function() {
+        const submitBtn = this.querySelector('input[type="submit"]');
+        const originalValue = submitBtn.value;
+        submitBtn.value = 'Signing in...';
+        submitBtn.disabled = true;
+        
+        // Re-enable button after 3 seconds if form doesn't submit
+        setTimeout(() => {
+            submitBtn.value = originalValue;
+            submitBtn.disabled = false;
+        }, 3000);
+    });
 </script>
 {% endblock %}

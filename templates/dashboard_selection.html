@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Selection - WorkFlow Pro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h2 class="text-primary">Choose Your Dashboard Experience</h2>
+                <p class="text-muted">Select the dashboard version that works best for you</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="dashboard-option">
+                        <div class="option-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Classic Dashboard</h4>
+                        <p>The original dashboard with task creation form and task management features.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check text-success me-2"></i>Task creation and management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Simple, focused interface</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Proven functionality</li>
+                        </ul>
+                        <a href="{{ url_for('tasks.dashboard') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-external-link-alt me-2"></i>Go to Classic Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="dashboard-option featured">
+                        <div class="option-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h4>Enhanced Dashboard <span class="badge bg-success ms-2">New!</span></h4>
+                        <p>The comprehensive dashboard with tiles, sidebar, messaging, and file management.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check text-success me-2"></i>Interactive dashboard tiles</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Sidebar with people online</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Broadcast messaging</li>
+                            <li><i class="fas fa-check text-success me-2"></i>File upload/download</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Real-time notifications</li>
+                        </ul>
+                        <a href="{{ url_for('tasks.enhanced_dashboard') }}" class="btn btn-success w-100">
+                            <i class="fas fa-rocket me-2"></i>Go to Enhanced Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Both dashboards share the same data and functionality core
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-option {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #0d6efd;
+}
+
+.dashboard-option.featured {
+    border-color: #198754;
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.dashboard-option.featured:hover {
+    border-color: #198754;
+    box-shadow: 0 10px 25px rgba(25, 135, 84, 0.15);
+}
+
+.option-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd, #4285f4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+.dashboard-option.featured .option-icon {
+    background: linear-gradient(135deg, #198754, #20c997);
+}
+
+.dashboard-option h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.dashboard-option p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    color: #495057;
+}
+
+.btn {
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .dashboard-option {
+        margin-bottom: 2rem;
+    }
+}
+</style>
+{% endblock %}

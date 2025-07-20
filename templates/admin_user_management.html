@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-users me-2"></i>User Management
+                </h1>
+                <p class="text-muted mb-0">Manage system users and their access</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('auth.admin_create_user') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-2"></i>Add New User
+                </a>
+                <a href="{{ url_for('auth.admin_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-table me-2 text-primary"></i>All Users
+                        <span class="badge bg-primary ms-2">{{ users|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-id-badge me-1"></i>ID</th>
+                                        <th><i class="fas fa-user me-1"></i>Username</th>
+                                        <th><i class="fas fa-envelope me-1"></i>Email</th>
+                                        <th><i class="fas fa-user-tag me-1"></i>Full Name</th>
+                                        <th><i class="fas fa-building me-1"></i>Department</th>
+                                        <th><i class="fas fa-phone me-1"></i>Phone</th>
+                                        <th><i class="fas fa-shield-alt me-1"></i>Admin</th>
+                                        <th><i class="fas fa-calendar me-1"></i>Created</th>
+                                        <th><i class="fas fa-cogs me-1"></i>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if user.profile_picture %}
+                                                    <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                                                         alt="Profile" class="rounded-circle me-2" 
+                                                         style="width: 32px; height: 32px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                                                         style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                        {{ user.username[0].upper() }}
+                                                    </div>
+                                                {% endif %}
+                                                <strong>{{ user.username }}</strong>
+                                            </div>
+                                        </td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            {% if user.first_name or user.last_name %}
+                                                {{ user.first_name or '' }} {{ user.last_name or '' }}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.department %}
+                                                <span class="badge bg-light text-dark">{{ user.department }}</span>
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.phone_number %}
+                                                {{ user.phone_number }}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.is_admin %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-crown me-1"></i>Admin
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">User</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {% if user.date_created %}
+                                                    {{ user.date_created.strftime('%Y-%m-%d') }}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                {% if user.id != current_user.id %}
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="confirmDelete({{ user.id }}, '{{ user.username }}')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                {% else %}
+                                                    <span class="badge bg-info text-dark">Current User</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="feature-icon mx-auto mb-3 bg-light text-muted">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h5 class="text-muted">No Users Found</h5>
+                            <p class="text-muted mb-4">There are no users in the system yet.</p>
+                            <a href="{{ url_for('auth.admin_create_user') }}" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Create First User
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user <strong id="deleteUsername"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone. All associated data will be permanently removed.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <form method="POST" action="{{ url_for('auth.admin_delete_user') }}" id="deleteUserForm">
+                    <input type="hidden" name="user_id" id="deleteUserId">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(userId, username) {
+    document.getElementById('deleteUserId').value = userId;
+    document.getElementById('deleteUsername').textContent = username;
+    const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

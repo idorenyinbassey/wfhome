@@ -1,0 +1,140 @@
+<!-- Broadcast Message Modal -->
+<div class="modal fade" id="broadcastModal" tabindex="-1" aria-labelledby="broadcastModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="broadcastModalLabel">
+                    <i class="fas fa-bullhorn me-2"></i>Send Broadcast Message
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('tasks.send_broadcast') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="messageContent" class="form-label">Message</label>
+                        <textarea class="form-control" id="messageContent" name="content" rows="4" 
+                                  placeholder="Type your broadcast message here..." required></textarea>
+                        <div class="form-text">
+                            <span id="charCount">0</span>/500 characters
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messagePriority" class="form-label">Priority</label>
+                        <select class="form-select" id="messagePriority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Send to:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient_type" id="sendToAll" value="all" checked>
+                            <label class="form-check-label" for="sendToAll">
+                                Everyone in the company
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient_type" id="sendToDepartment" value="department">
+                            <label class="form-check-label" for="sendToDepartment">
+                                My department only
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient_type" id="sendToGroup" value="group">
+                            <label class="form-check-label" for="sendToGroup">
+                                Specific group
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3" id="groupSelection" style="display: none;">
+                        <label for="selectedGroup" class="form-label">Select Group</label>
+                        <select class="form-select" id="selectedGroup" name="group_id">
+                            {% if user_groups %}
+                                {% for group in user_groups %}
+                                <option value="{{ group.id }}">{{ group.name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="">No groups available</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> Broadcast messages will appear on the message board for all selected recipients.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counter for message content
+document.getElementById('messageContent').addEventListener('input', function() {
+    const maxLength = 500;
+    const currentLength = this.value.length;
+    document.getElementById('charCount').textContent = currentLength;
+    
+    if (currentLength > maxLength) {
+        this.value = this.value.substring(0, maxLength);
+        document.getElementById('charCount').textContent = maxLength;
+    }
+    
+    // Change color based on character count
+    const charCountElement = document.getElementById('charCount');
+    if (currentLength > maxLength * 0.9) {
+        charCountElement.className = 'text-danger';
+    } else if (currentLength > maxLength * 0.75) {
+        charCountElement.className = 'text-warning';
+    } else {
+        charCountElement.className = 'text-muted';
+    }
+});
+
+// Show/hide group selection based on recipient type
+document.querySelectorAll('input[name="recipient_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const groupSelection = document.getElementById('groupSelection');
+        if (this.value === 'group') {
+            groupSelection.style.display = 'block';
+            document.getElementById('selectedGroup').required = true;
+        } else {
+            groupSelection.style.display = 'none';
+            document.getElementById('selectedGroup').required = false;
+        }
+    });
+});
+
+// Handle form submission
+document.querySelector('#broadcastModal form').addEventListener('submit', function(e) {
+    const messageContent = document.getElementById('messageContent').value.trim();
+    if (messageContent.length === 0) {
+        e.preventDefault();
+        alert('Please enter a message before sending.');
+        return;
+    }
+    
+    const recipientType = document.querySelector('input[name="recipient_type"]:checked').value;
+    if (recipientType === 'group') {
+        const selectedGroup = document.getElementById('selectedGroup').value;
+        if (!selectedGroup) {
+            e.preventDefault();
+            alert('Please select a group to send the message to.');
+            return;
+        }
+    }
+    
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+});
+</script>

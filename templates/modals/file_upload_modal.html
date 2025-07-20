@@ -1,0 +1,130 @@
+<!-- File Upload Modal -->
+<div class="modal fade" id="fileUploadModal" tabindex="-1" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fileUploadModalLabel">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload File
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('tasks.upload_file') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fileName" class="form-label">File Name (Optional)</label>
+                        <input type="text" class="form-control" id="fileName" name="file_name" 
+                               placeholder="Leave empty to use original filename">
+                    </div>
+                    <div class="mb-3">
+                        <label for="fileDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="fileDescription" name="description" rows="3" 
+                                  placeholder="Brief description of the file"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fileCategory" class="form-label">Category</label>
+                        <select class="form-select" id="fileCategory" name="category">
+                            <option value="document">Document</option>
+                            <option value="image">Image</option>
+                            <option value="spreadsheet">Spreadsheet</option>
+                            <option value="presentation">Presentation</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Select File</label>
+                        <input type="file" class="form-control" id="fileInput" name="file" required>
+                        <div class="form-text">Maximum file size: 16MB</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="filePrivate" name="is_private">
+                            <label class="form-check-label" for="filePrivate">
+                                Make this file private (only you can access it)
+                            </label>
+                        </div>
+                    </div>
+                    <div id="uploadProgress" class="progress mb-3" style="display: none;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info" id="uploadButton">
+                        <i class="fas fa-upload me-2"></i>Upload File
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('fileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const maxSize = 16 * 1024 * 1024; // 16MB
+        if (file.size > maxSize) {
+            alert('File size exceeds 16MB limit');
+            this.value = '';
+            return;
+        }
+        
+        // Auto-populate filename if not provided
+        const fileNameInput = document.getElementById('fileName');
+        if (!fileNameInput.value) {
+            fileNameInput.value = file.name.split('.').slice(0, -1).join('.');
+        }
+    }
+});
+
+// Handle form submission with progress bar
+document.querySelector('#fileUploadModal form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const progressBar = document.querySelector('#uploadProgress .progress-bar');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const uploadButton = document.getElementById('uploadButton');
+    
+    uploadProgress.style.display = 'block';
+    uploadButton.disabled = true;
+    uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            progressBar.style.width = percentComplete + '%';
+            progressBar.textContent = Math.round(percentComplete) + '%';
+        }
+    });
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                location.reload();
+            } else {
+                alert('Upload failed: ' + response.error);
+            }
+        } else {
+            alert('Upload failed. Please try again.');
+        }
+        
+        uploadButton.disabled = false;
+        uploadButton.innerHTML = '<i class="fas fa-upload me-2"></i>Upload File';
+        uploadProgress.style.display = 'none';
+    };
+    
+    xhr.onerror = function() {
+        alert('Upload failed. Please check your connection and try again.');
+        uploadButton.disabled = false;
+        uploadButton.innerHTML = '<i class="fas fa-upload me-2"></i>Upload File';
+        uploadProgress.style.display = 'none';
+    };
+    
+    xhr.open('POST', this.action);
+    xhr.send(formData);
+});
+</script>

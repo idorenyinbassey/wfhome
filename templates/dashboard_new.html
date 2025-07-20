@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - WorkFlow Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Top notification bar -->
+    <div class="notification-bar mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="notifications-section">
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary position-relative" type="button" id="notificationsDropdown" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">
+                            {{ unread_notifications|length if unread_notifications else 0 }}
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                        <li><h6 class="dropdown-header">Recent Notifications</h6></li>
+                        {% if unread_notifications %}
+                            {% for notification in unread_notifications %}
+                            <li>
+                                <a class="dropdown-item notification-item" href="#" onclick="markAsRead({{ notification.id }})">
+                                    <div class="d-flex align-items-center">
+                                        <div class="notification-icon me-3">
+                                            {% if notification.notification_type == 'message' %}
+                                                <i class="fas fa-envelope text-primary"></i>
+                                            {% elif notification.notification_type == 'task' %}
+                                                <i class="fas fa-tasks text-success"></i>
+                                            {% elif notification.notification_type == 'file' %}
+                                                <i class="fas fa-file text-info"></i>
+                                            {% else %}
+                                                <i class="fas fa-info-circle text-secondary"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="notification-content">
+                                            <strong>{{ notification.title }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ notification.date_created.strftime('%Y-%m-%d %H:%M') }}</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                            <li><span class="dropdown-item-text text-muted">No new notifications</span></li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="{{ url_for('tasks.all_notifications') }}">View All Notifications</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="user-info">
+                <span class="text-muted">Welcome back, <strong>{{ current_user.username }}</strong></span>
+                <span class="badge bg-success ms-2">
+                    <i class="fas fa-circle me-1"></i>Online
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Dashboard Content -->
+        <div class="col-lg-8">
+            <!-- Quick Stats Tiles -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="stats-tile">
+                        <div class="stats-icon bg-primary">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>{{ user_tasks|length }}</h3>
+                            <p>My Tasks</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-tile">
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>{{ completed_tasks }}</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-tile">
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>{{ pending_tasks }}</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-tile">
+                        <div class="stats-icon bg-info">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>{{ user_files|length if user_files else 0 }}</h3>
+                            <p>Files</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Management Tiles -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="dashboard-tile">
+                        <div class="tile-header">
+                            <h5><i class="fas fa-plus-circle me-2"></i>Create New Task</h5>
+                        </div>
+                        <div class="tile-content">
+                            <button class="btn btn-primary w-100" onclick="showCreateTaskModal()">
+                                <i class="fas fa-plus me-2"></i>Add New Task
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-tile">
+                        <div class="tile-header">
+                            <h5><i class="fas fa-upload me-2"></i>File Upload</h5>
+                        </div>
+                        <div class="tile-content">
+                            <button class="btn btn-info w-100" onclick="showFileUploadModal()">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>Upload File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Tasks -->
+            <div class="dashboard-tile">
+                <div class="tile-header">
+                    <h5><i class="fas fa-list me-2"></i>Recent Tasks</h5>
+                    <a href="{{ url_for('tasks.all_tasks') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="tile-content">
+                    {% if user_tasks %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Priority</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in user_tasks[:5] %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ task.title }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ task.description[:50] }}...</small>
+                                        </td>
+                                        <td>
+                                            {% if task.priority == 'high' %}
+                                                <span class="badge bg-danger">High</span>
+                                            {% elif task.priority == 'medium' %}
+                                                <span class="badge bg-warning">Medium</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Low</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.due_date %}
+                                                {{ task.due_date.strftime('%Y-%m-%d') }}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if task.start_time and task.end_time %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif task.start_time %}
+                                                <span class="badge bg-primary">In Progress</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Not Started</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewTask({{ task.id }})">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success" onclick="editTask({{ task.id }})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-tasks text-muted" style="font-size: 3rem;"></i>
+                            <h6 class="mt-3 text-muted">No tasks yet</h6>
+                            <p class="text-muted">Create your first task to get started</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-lg-4">
+            <!-- Online Users -->
+            <div class="sidebar-widget mb-4">
+                <div class="widget-header">
+                    <h6><i class="fas fa-users me-2"></i>People Online</h6>
+                </div>
+                <div class="widget-content">
+                    {% if online_users %}
+                        {% for user in online_users %}
+                        <div class="user-item">
+                            <div class="d-flex align-items-center">
+                                {% if user.profile_picture %}
+                                    <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                                         alt="Profile" class="user-avatar">
+                                {% else %}
+                                    <div class="user-avatar-placeholder">
+                                        {{ user.username[0].upper() }}
+                                    </div>
+                                {% endif %}
+                                <div class="user-info">
+                                    <strong>{{ user.username }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ user.department or 'No Department' }}</small>
+                                </div>
+                                <div class="user-status">
+                                    <span class="status-indicator online"></span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No users online</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Department Members -->
+            <div class="sidebar-widget mb-4">
+                <div class="widget-header">
+                    <h6><i class="fas fa-building me-2"></i>My Department</h6>
+                </div>
+                <div class="widget-content">
+                    {% if department_users %}
+                        {% for user in department_users %}
+                        <div class="user-item">
+                            <div class="d-flex align-items-center">
+                                {% if user.profile_picture %}
+                                    <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                                         alt="Profile" class="user-avatar">
+                                {% else %}
+                                    <div class="user-avatar-placeholder">
+                                        {{ user.username[0].upper() }}
+                                    </div>
+                                {% endif %}
+                                <div class="user-info">
+                                    <strong>{{ user.username }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ user.department }}</small>
+                                </div>
+                                <div class="user-status">
+                                    {% if user.status == 'online' %}
+                                        <span class="status-indicator online"></span>
+                                    {% elif user.status == 'away' %}
+                                        <span class="status-indicator away"></span>
+                                    {% elif user.status == 'busy' %}
+                                        <span class="status-indicator busy"></span>
+                                    {% else %}
+                                        <span class="status-indicator offline"></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No department members</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Group Members -->
+            <div class="sidebar-widget mb-4">
+                <div class="widget-header">
+                    <h6><i class="fas fa-users-cog me-2"></i>My Groups</h6>
+                </div>
+                <div class="widget-content">
+                    {% if user_groups %}
+                        {% for group in user_groups %}
+                        <div class="group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ group.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ group.members|length }} members</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewGroup({{ group.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No groups joined</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Broadcast Messages -->
+            <div class="sidebar-widget">
+                <div class="widget-header">
+                    <h6><i class="fas fa-bullhorn me-2"></i>Message Board</h6>
+                    <button class="btn btn-sm btn-primary" onclick="showBroadcastModal()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="widget-content message-board">
+                    {% if broadcast_messages %}
+                        {% for message in broadcast_messages %}
+                        <div class="message-item">
+                            <div class="message-header">
+                                <strong>{{ message.sender.username }}</strong>
+                                <small class="text-muted ms-2">{{ message.date_created.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <div class="message-content">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No messages yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include modals -->
+{% include 'modals/create_task_modal.html' %}
+{% include 'modals/file_upload_modal.html' %}
+{% include 'modals/broadcast_modal.html' %}
+
+<script>
+function showCreateTaskModal() {
+    var modal = new bootstrap.Modal(document.getElementById('createTaskModal'));
+    modal.show();
+}
+
+function showFileUploadModal() {
+    var modal = new bootstrap.Modal(document.getElementById('fileUploadModal'));
+    modal.show();
+}
+
+function showBroadcastModal() {
+    var modal = new bootstrap.Modal(document.getElementById('broadcastModal'));
+    modal.show();
+}
+
+function viewTask(taskId) {
+    window.location.href = `/tasks/view/${taskId}`;
+}
+
+function editTask(taskId) {
+    window.location.href = `/tasks/edit/${taskId}`;
+}
+
+function viewGroup(groupId) {
+    window.location.href = `/groups/view/${groupId}`;
+}
+
+function markAsRead(notificationId) {
+    fetch(`/notifications/mark-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+        }
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+// Auto-refresh online users every 30 seconds
+setInterval(function() {
+    fetch('/dashboard/refresh-users')
+        .then(response => response.json())
+        .then(data => {
+            // Update online users section
+            updateOnlineUsers(data.online_users);
+        })
+        .catch(error => console.log('Error refreshing users:', error));
+}, 30000);
+
+function updateOnlineUsers(users) {
+    // Implementation to update the online users section without full page reload
+    console.log('Online users updated:', users);
+}
+</script>
+{% endblock %}

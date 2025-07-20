@@ -66,10 +66,11 @@ def create_app(config_class=Config):
     # Register Blueprints
     from auth import auth as auth_blueprint
     from tasks import tasks as tasks_blueprint
+    from api_endpoints import api_bp as api_blueprint
     
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(tasks_blueprint)
-    app.config['SECRET_KEY'] = 'Hss662hsjuGcsj52u'  # Replace with a secure random key
+    app.register_blueprint(api_blueprint)
 
     # Custom Jinja2 filter for formatting datetime
     @app.template_filter('datetimeformat')
@@ -78,11 +79,11 @@ def create_app(config_class=Config):
             return value.strftime(format)
         return ''
 
-    # Initialize Flask-Admin
-    admin = Admin(app, name='Admin Dashboard', template_mode='bootstrap4')
+    # Initialize Flask-Admin (temporarily disabled for simplification)
+    # admin = Admin(app, name='Admin Dashboard', template_mode='bootstrap4')
     
     # Add custom model views to the admin
-    admin.add_view(UserModelView(User, db.session))
-    admin.add_view(TaskModelView(Task, db.session))
+    # admin.add_view(UserModelView(User, db.session))
+    # admin.add_view(TaskModelView(Task, db.session))
 
     return app

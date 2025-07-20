@@ -1,0 +1,58 @@
+<!-- Create Task Modal -->
+<div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTaskModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Create New Task
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('tasks.create_task') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="taskTitle" class="form-label">Task Title</label>
+                        <input type="text" class="form-control" id="taskTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="taskPriority" class="form-label">Priority</label>
+                                <select class="form-select" id="taskPriority" name="priority">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="taskDueDate" class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="taskDueDate" name="due_date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskCategory" class="form-label">Category</label>
+                        <select class="form-select" id="taskCategory" name="category">
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="project">Project</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,257 +1,252 @@
-# Wfhome
+# WFHome - Work From Home Management System
 
-**Wfhome** is a web-based work-from-home management system built with Flask. The platform allows users to create and manage tasks, track progress, and maintain personal profiles within an organization. It supports multiple user roles, authentication, and task submission with a focus on managing individual and group workflows.
+**WFHome** is a modern, streamlined work-from-home task management system built with Flask. Designed for simplicity and efficiency, this platform enables remote workers and teams to create, track, and manage tasks with a clean, professional interface.
 
-## Features
+## 🚀 Features
 
-- User registration and login system
-- Profile management with editable fields such as name, department, etc.
-- Task creation and assignment
-- Dashboard for tracking tasks and progress
-- User authentication and session management with Flask-Login
-- Responsive design using HTML and CSS
-- Blueprint structure for scalability
-- Database management with Flask-SQLAlchemy and Alembic for migrations
+### Core Functionality
+- **User Authentication** - Secure registration and login system
+- **Task Management** - Create, edit, delete, and track task completion
+- **Personal Dashboard** - Clean interface showing your tasks and progress
+- **Profile Management** - Manage user information and preferences
+- **Timer Integration** - Track task duration and completion times
+- **Assignment System** - Assign tasks to team members
+- **Professional UI** - Clean, modern blue-themed interface
 
-## Technologies Used
+### Technical Features
+- **Responsive Design** - Works on desktop and mobile devices
+- **Blueprint Architecture** - Modular Flask application structure
+- **Database Migrations** - Alembic integration for schema management
+- **Session Management** - Secure user sessions with Flask-Login
+- **SQLite Database** - Lightweight database for easy deployment
 
-- **Flask**: A lightweight Python web framework
-- **Flask-SQLAlchemy**: ORM for handling database interactions
-- **Flask-Login**: For user session management
-- **Flask-Migrate**: For handling database migrations
-- **SQLite**: Lightweight database for development
-- **HTML/CSS**: For frontend structure and styling
-- **JavaScript**: For interactive elements
-- **Git/GitHub**: Version control and project hosting
+## 🛠️ Technology Stack
 
-## Project Structure
+- **Backend**: Flask (Python web framework)
+- **Database**: SQLite with SQLAlchemy ORM
+- **Authentication**: Flask-Login
+- **Migrations**: Flask-Migrate + Alembic
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Styling**: Bootstrap 5 + Custom CSS
+- **Version Control**: Git
+
+## 📁 Project Structure
 
 ```plaintext
 wfhome/
-│
-├── auth/
+├── auth/                    # Authentication blueprint
 │   ├── __init__.py
-│   ├── forms.py
-│   ├── routes.py
-│
-├── tasks/
+│   ├── forms.py            # Login/register forms
+│   └── routes.py           # Auth routes
+├── tasks/                   # Task management blueprint
 │   ├── __init__.py
-│   ├── forms.py
-│   ├── routes.py
-│
-├── static/
+│   ├── forms.py            # Task forms
+│   └── routes.py           # Task routes
+├── static/                  # Static assets
 │   ├── css/
+│   │   └── styles.css      # Main stylesheet
 │   ├── js/
+│   │   └── script.js       # JavaScript functionality
 │   ├── images/
-│
-├── templates/
-│   ├── base.html
-│   ├── dashboard.html
-│   ├── index.html
-│   ├── login.html
-│   ├── profile.html
-│   ├── register.html
-│   ├── settings.html
-│
-├── __pycache__/
-├── instance/
-├── migrations/
-├── venv/
-├── app.py
-├── config.py
-├── models.py
-├── run.py
-├── requirements.txt
+│   └── uploads/            # User uploaded files
+├── templates/               # Jinja2 templates
+│   ├── base.html           # Base template
+│   ├── dashboard.html      # Main dashboard
+│   ├── index.html          # Landing page
+│   ├── login.html          # Login page
+│   ├── register.html       # Registration page
+│   ├── profile.html        # User profile
+│   ├── edit_task.html      # Task editing
+│   └── settings.html       # User settings
+├── migrations/              # Database migrations
+├── instance/               # Instance-specific files (gitignored)
+├── app.py                  # Application factory
+├── config.py               # Configuration settings
+├── models.py               # Database models
+├── run.py                  # Application entry point
+├── requirements.txt        # Python dependencies
 └── README.md
 ```
-Installation
 
-Local Development Installation
+## 🚀 Quick Start
 
-To get started with Wfhome locally, follow these steps:
+### Prerequisites
+- Python 3.8 or higher
+- Git
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/wfhome.git
-cd wfhome
+### Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/idorenyinbassey/wfhome.git
+   cd wfhome
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv .venv
+   
+   # Windows
+   .venv\Scripts\activate
+   
+   # Linux/macOS
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Initialize database**
+   ```bash
+   flask db init
+   flask db migrate -m "Initial migration"
+   flask db upgrade
+   ```
+
+5. **Run the application**
+   ```bash
+   python run.py
+   ```
+
+6. **Access the application**
+   - Open your browser to `http://127.0.0.1:5000`
+   - Register a new account or login
+   - Start managing your tasks!
+
+## 🐳 Docker Deployment
+
+### Build and Run with Docker
+
+1. **Build the Docker image**
+   ```bash
+   docker build -t wfhome:latest .
+   ```
+
+2. **Run the container**
+   ```bash
+   docker run -d -p 5000:5000 --name wfhome-app wfhome:latest
+   ```
+
+### Using Docker Compose
+
+1. **Start the application**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Stop the application**
+   ```bash
+   docker-compose down
+   ```
+
+## 🌐 Production Deployment
+
+### Heroku Deployment
+
+1. **Install Heroku CLI and login**
+   ```bash
+   heroku login
+   ```
+
+2. **Create Heroku app**
+   ```bash
+   heroku create your-wfhome-app
+   ```
+
+3. **Deploy**
+   ```bash
+   git push heroku main
+   ```
+
+### Render Deployment
+
+1. Connect your GitHub repository to Render
+2. Render will auto-detect the Flask app
+3. Set environment variables as needed
+4. Deploy with one click
+
+### DigitalOcean App Platform
+
+1. Create a new app on DigitalOcean
+2. Connect your GitHub repository
+3. Configure build and run commands
+4. Deploy automatically on push
+
+## 📖 Usage Guide
+
+### Getting Started
+1. **Register** - Create your account with email and password
+2. **Login** - Access your personal dashboard
+3. **Profile** - Complete your profile information
+4. **Create Tasks** - Use the dashboard form to create new tasks
+5. **Manage Tasks** - Edit, complete, or delete tasks as needed
+
+### Task Management
+- **Create**: Fill out the task creation form with title, description, priority, and due date
+- **Assign**: Assign tasks to yourself or team members
+- **Track**: Monitor task progress with start/end times
+- **Complete**: Mark tasks as completed when finished
+
+## 🔧 Configuration
+
+### Environment Variables
+Create a `.env` file in the project root:
+
+```env
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=sqlite:///instance/site.db
 ```
 
-2. Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # For Linux/macOS
-# or
-venv\Scripts\activate     # For Windows
+### Database Configuration
+The application uses SQLite by default. For production, consider PostgreSQL:
+
+```python
+# config.py
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///instance/site.db'
 ```
 
-3. Install dependencies:
+## 🧪 Testing
+
 ```bash
-pip install -r requirements.txt
+# Run tests (when implemented)
+python -m pytest
+
+# Run with coverage
+python -m pytest --cov=app
 ```
 
-4. Set up the database:
-```bash
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
-```
+## 🤝 Contributing
 
-5. Run the application:
-```bash
-flask run
-```
+We welcome contributions! Please follow these steps:
 
-6. Open your browser and visit http://127.0.0.1:5000/ to access the application.
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
+### Development Guidelines
+- Follow PEP 8 style guidelines
+- Write clear, descriptive commit messages
+- Add tests for new functionality
+- Update documentation as needed
 
+## 📄 License
 
-Docker Installation
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To run Wfhome using Docker, follow these steps:
+## 🙏 Acknowledgments
 
-1. Install Docker if you haven't already.
-
-
-2. Clone the repository:
-```bash
-git clone https://github.com/yourusername/wfhome.git
-cd wfhome
-```
-
-3. Build the Docker image:
-```bash
-docker build -t wfhome:latest .
-```
-
-4. Run the Docker container:
-```bash
-docker run -d -p 5000:5000 wfhome:latest
-```
-
-5. Open your browser and visit http://localhost:5000/ to access the application.
-
-
-
-Deployment to Web Hosting Services
-
-Heroku
-
-1. Install the Heroku CLI and log in:
-
-heroku login
-
-
-2. Create a new Heroku application:
-```bash
-heroku create wfhome-app
-```
-
-3. Add a Procfile in the root directory with the following content:
-```bash
-web: flask run --host=0.0.0.0 --port=$PORT
-```
-
-4. Add your code to the Heroku repository and push to deploy:
-```bash
-git add .
-git commit -m "Initial commit"
-git push heroku master
-```
-
-5. Open your application in the browser:
-
-heroku open
-
-
-
-Render
-
-1. Create a free account on Render.
-
-
-2. Follow the instructions to create a new Flask web service and connect your GitHub repository.
-
-
-3. Render will automatically detect your Flask app and deploy it.
-
-
-4. After deployment, Render will provide a URL where you can access your application.
-
-
-
-DigitalOcean
-
-1. Create a DigitalOcean Droplet and install Docker.
-
-
-2. SSH into your Droplet:
-```bash
-ssh root@your_droplet_ip
-```
-
-3. Install Docker and Docker Compose on the server:
-
-apt update
-apt install docker docker-compose
-
-
-4. Clone your repository to the server:
-```bash
-git clone https://github.com/yourusername/wfhome.git
-cd wfhome
-```
-
-5. Build and run the Docker image:
-```bash
-docker-compose up -d
-```
-
-6. Open your browser and navigate to the IP address of your Droplet to access Wfhome.
-
-
-
-Usage
-
-1. Registration and Login: Register for a new account, then log in to access your dashboard.
-
-
-2. Profile Management: Update your profile details like name and department after logging in.
-
-
-3. Task Management: Create and manage tasks, assign them to yourself or a group, and track their progress on the dashboard.
-
-
-
-Contributing
-
-Contributions are welcome! If you'd like to contribute to Wfhome, please follow these steps:
-
-1. Fork the repository
-
-
-2. Create a new branch (git checkout -b feature-branch)
-
-
-3. Make your changes
-
-
-4. Commit the changes (git commit -m 'Add new feature')
-
-
-5. Push to the branch (git push origin feature-branch)
-
-
-6. Open a Pull Request
-
-
-
-License
-
-This project is licensed under the MIT License.
-
+- Flask community for the excellent framework
+- Bootstrap team for the UI components
+- All contributors who help improve this project
 
 ---
 
-Wfhome © 2024 by Predorio LTD. All rights reserved.
+**WFHome** © 2025 by **Predorio LTD**. All rights reserved.
 
-Make sure to add Docker-related files, such as a `Dockerfile` and optionally a `docker-compose.yml`, to your project if you plan on using Docker for deployment. Also, replace `yourusername` and `wfhome-app` with your actual GitHub username and desired application names.
+*Built with ❤️ for remote teams and productivity enthusiasts.*

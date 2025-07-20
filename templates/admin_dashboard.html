@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - WorkFlow Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-cogs me-2"></i>Admin Dashboard
+                </h1>
+                <p class="text-muted mb-0">Manage your WorkFlow Pro system</p>
+            </div>
+            <div class="badge bg-primary fs-6 px-3 py-2">
+                <i class="fas fa-shield-alt me-1"></i>Administrator Access
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon mx-auto mb-3 bg-primary">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary">{{ user_count | default(0) }}</h3>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon mx-auto mb-3 bg-success">
+                        <i class="fas fa-tasks text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-success">{{ task_count | default(0) }}</h3>
+                    <p class="text-muted mb-0">Total Tasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon mx-auto mb-3 bg-warning">
+                        <i class="fas fa-clock text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-warning">{{ active_tasks | default(0) }}</h3>
+                    <p class="text-muted mb-0">Active Tasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon mx-auto mb-3 bg-info">
+                        <i class="fas fa-check-circle text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-info">{{ completed_tasks | default(0) }}</h3>
+                    <p class="text-muted mb-0">Completed Tasks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto mb-3 bg-primary">
+                        <i class="fas fa-user-cog text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">User Management</h5>
+                    <p class="text-muted mb-3">Manage user accounts, permissions, and roles</p>
+                    <button class="btn btn-primary" onclick="showUserManagement()">
+                        <i class="fas fa-users me-2"></i>Manage Users
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto mb-3 bg-success">
+                        <i class="fas fa-chart-bar text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">System Analytics</h5>
+                    <p class="text-muted mb-3">View system performance and usage statistics</p>
+                    <button class="btn btn-success" onclick="showAnalytics()">
+                        <i class="fas fa-chart-line me-2"></i>View Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mx-auto mb-3 bg-warning">
+                        <i class="fas fa-cog text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">System Settings</h5>
+                    <p class="text-muted mb-3">Configure system-wide settings and preferences</p>
+                    <button class="btn btn-warning" onclick="showSystemSettings()">
+                        <i class="fas fa-cogs me-2"></i>Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-3">
+                            <button class="btn btn-outline-primary w-100" onclick="createNewUser()">
+                                <i class="fas fa-user-plus me-2"></i>Add User
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button class="btn btn-outline-success w-100" onclick="exportData()">
+                                <i class="fas fa-download me-2"></i>Export Data
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button class="btn btn-outline-warning w-100" onclick="systemMaintenance()">
+                                <i class="fas fa-tools me-2"></i>Maintenance
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button class="btn btn-outline-info w-100" onclick="viewLogs()">
+                                <i class="fas fa-file-alt me-2"></i>View Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-info-circle me-2 text-info"></i>System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Version:</strong> <span class="text-muted">WorkFlow Pro v1.0.0</span>
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Database:</strong> <span class="text-muted">SQLite (Development)</span>
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Server Status:</strong> 
+                                    <span class="badge bg-success">Online</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Last Backup:</strong> <span class="text-muted">Never</span>
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Uptime:</strong> <span class="text-muted">{{ uptime | default('N/A') }}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Storage Used:</strong> <span class="text-muted">{{ storage_used | default('N/A') }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showUserManagement() {
+        window.location.href = "{{ url_for('auth.admin_user_management') }}";
+    }
+    
+    function showAnalytics() {
+        alert('Analytics dashboard coming soon!');
+    }
+    
+    function showSystemSettings() {
+        alert('System settings panel coming soon!');
+    }
+    
+    function createNewUser() {
+        window.location.href = "{{ url_for('auth.admin_create_user') }}";
+    }
+    
+    function exportData() {
+        alert('Data export functionality coming soon!');
+    }
+    
+    function systemMaintenance() {
+        if (confirm('Are you sure you want to run system maintenance? This may affect system performance.')) {
+            alert('System maintenance started. Please check logs for progress.');
+        }
+    }
+    
+    function viewLogs() {
+        alert('Log viewer coming soon!');
+    }
+    
+    // Auto-refresh stats every 30 seconds
+    setInterval(function() {
+        // This would typically make an AJAX call to refresh the stats
+        console.log('Stats refresh (placeholder)');
+    }, 30000);
+</script>
+{% endblock %}
